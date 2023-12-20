@@ -1,12 +1,14 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.Date;
 
 
 @MappedSuperclass
 public abstract class BaseEntity {
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,7 +19,4 @@ public abstract class BaseEntity {
     @Column
     private Date updatedAt;
 
-    public Long getId() {
-        return id;
-    }
 }
