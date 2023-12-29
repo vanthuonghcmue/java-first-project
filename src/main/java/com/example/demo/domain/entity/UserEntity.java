@@ -33,10 +33,11 @@ public class UserEntity extends BaseEntity{
 
     @Column
     private String email;
-
-    @ManyToMany
+    @ManyToMany(cascade = {
+            CascadeType.ALL
+    })
     @JoinTable(
-            name = "user_groups",
+            name = "user_group",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
