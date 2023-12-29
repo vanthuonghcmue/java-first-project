@@ -45,7 +45,7 @@ public class UserApi {
     @PostMapping("")
     public ResponseEntity<ResponseWrapper<UserResource>> createUser(
             @Valid @RequestBody RegisterUserRequest registerUserRequest
-    ) {
+    ){
         UserResource userResource = userService.save(registerUserRequest);
         ResponseWrapper<UserResource> response = new ResponseWrapper<>();
         response.setData(userResource);

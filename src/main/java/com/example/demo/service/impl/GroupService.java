@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class GroupService implements IGroupService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
-
     private final GroupMapper groupMapper;
 
     @Autowired
@@ -66,7 +65,6 @@ public class GroupService implements IGroupService {
         System.out.println(groupEntity);
         return groupMapper.mapTo(groupUpdated);
     }
-
 
     public Boolean exists(String name) {
         Optional<GroupEntity> existingGroup = groupRepository.findByName(name);

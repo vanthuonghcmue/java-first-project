@@ -4,10 +4,13 @@ import com.example.demo.domain.dto.request.RegisterUserRequest;
 import com.example.demo.domain.dto.request.UserRequest;
 import com.example.demo.domain.dto.resource.UserResource;
 import com.example.demo.domain.entity.UserEntity;
+import com.example.demo.event.UserCreatedEvent;
 import com.example.demo.exception.CustomException.ResourceNotFoundException;
 import com.example.demo.mapper.impl.UserMapper;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.demo.repository.UserRepository;
@@ -24,19 +27,28 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
 
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       UserMapper userMapper) {
+    public UserService(
+            UserRepository userRepository, PasswordEncoder passwordEncoder,
+            UserMapper userMapper, ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.applicationEventPublisher = applicationEventPublisher;
+
     }
+
     @Transactional
     public UserResource save(RegisterUserRequest registerUserRequest) {
         UserEntity userEntity = userMapper.mapFrom(registerUserRequest);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        return this.userMapper.mapTo(userRepository.save(userEntity));
+        UserResource userResource = this.userMapper.mapTo(userRepository.save(userEntity));
+        // Fire event created user
+        fireUserCreatedEvent(userEntity);
+        return userResource;
     }
 
     @Transactional
@@ -48,7 +60,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserResource> all() {
-        List<UserEntity> userEntities =userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findAll();
         return userEntities.stream().map(userMapper::mapTo).collect(Collectors.toList());
     }
 
@@ -62,19 +74,19 @@ public class UserService implements IUserService {
 
     @Override
     public UserResource partialUpdate(Long id, UserRequest userRequest) {
-        UserEntity userEntity =  userRepository.findById(id).map(
-            existingUser -> {
-                Optional.ofNullable(userRequest.getName()).ifPresent(existingUser::setName);
-                Optional.ofNullable(userRequest.getEmail()).ifPresent(existingUser::setEmail);
-                Optional.ofNullable(userRequest.getUsername()).ifPresent(existingUser::setUsername);
-                return userRepository.save(existingUser);
-            }
+        UserEntity userEntity = userRepository.findById(id).map(
+                existingUser -> {
+                    Optional.ofNullable(userRequest.getName()).ifPresent(existingUser::setName);
+                    Optional.ofNullable(userRequest.getEmail()).ifPresent(existingUser::setEmail);
+                    Optional.ofNullable(userRequest.getUsername()).ifPresent(existingUser::setUsername);
+                    return userRepository.save(existingUser);
+                }
         ).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return userMapper.mapTo(userEntity);
     }
 
 
-    public Boolean exists(String username){
+    public Boolean exists(String username) {
         Optional<UserEntity> existingUser = userRepository.findByUsername(username);
         return existingUser.isPresent();
     }
@@ -86,5 +98,9 @@ public class UserService implements IUserService {
         return userMapper.mapTo(userEntity);
     }
 
+    public void fireUserCreatedEvent(UserEntity user) {
+        UserCreatedEvent event = new UserCreatedEvent(user);
+        applicationEventPublisher.publishEvent(event);
+    }
 
 }
