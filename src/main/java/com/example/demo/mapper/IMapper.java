@@ -1,8 +1,5 @@
 package com.example.demo.mapper;
 
-import com.example.demo.domain.dto.request.RegisterUserRequest;
-import com.example.demo.domain.entity.UserEntity;
-
 public interface IMapper<A, B, C>{
     /**
      *

@@ -2,9 +2,7 @@ package com.example.demo.domain.dto.request;
 
 import com.example.demo.annotation.UniqueUsername;
 import com.example.demo.markerinterface.OnCreate;
-import com.example.demo.markerinterface.OnUpdate;
 import com.example.demo.markerinterface.UserDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
