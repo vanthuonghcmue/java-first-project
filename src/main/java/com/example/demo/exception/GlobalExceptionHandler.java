@@ -1,7 +1,7 @@
 package com.example.demo.exception;
 
 import com.example.demo.api.rest.ResponseWrapper;
-import com.example.demo.exception.CustomException.ResourceNotFoundException;
+import com.example.demo.exception.customexception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
