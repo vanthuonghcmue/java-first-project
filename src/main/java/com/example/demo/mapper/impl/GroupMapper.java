@@ -24,8 +24,6 @@ public class GroupMapper implements IMapper<GroupEntity, GroupDto, GroupResource
 
     @Override
     public GroupEntity mapFrom(GroupDto groupDto) {
-        System.out.println(groupDto);
-        System.out.println(mapper.map(groupDto, GroupEntity.class));
         return mapper.map(groupDto, GroupEntity.class);
     }
 }

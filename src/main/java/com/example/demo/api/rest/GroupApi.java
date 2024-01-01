@@ -82,7 +82,6 @@ public class GroupApi {
             @RequestBody GroupRequest groupRequest
     ) {
         groupRequest.setId(id);
-        System.out.println(groupRequest);
         GroupResource groupResource = groupService.save(groupRequest);
         ResponseWrapper<GroupResource> response = new ResponseWrapper<>();
         response.setData(groupResource);
