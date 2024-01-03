@@ -102,4 +102,8 @@ public class UserService implements IUserService {
         applicationEventPublisher.publishEvent(event);
     }
 
+    public Long count(){
+        return userRepository.count();
+    }
+
 }

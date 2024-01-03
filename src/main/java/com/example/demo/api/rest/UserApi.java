@@ -6,6 +6,7 @@ import com.example.demo.domain.dto.resource.UserResource;
 import com.example.demo.service.impl.S3Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserApi {
+    final RedisTemplate redisTemplate;
     final S3Service s3Service;
-    private final UserService userService;
+    final UserService userService;
 
     @Autowired
-    public UserApi(UserService userService, S3Service s3Service) {
+    public UserApi(UserService userService, S3Service s3Service, RedisTemplate redisTemplate) {
         this.userService = userService;
         this.s3Service = s3Service;
+        this.redisTemplate = redisTemplate;
     }
 
     @GetMapping("")
@@ -48,7 +51,7 @@ public class UserApi {
     @PostMapping("")
     public ResponseEntity<ResponseWrapper<UserResource>> createUser(
             @Valid @RequestBody RegisterUserRequest registerUserRequest
-    ){
+    ) {
         UserResource userResource = userService.save(registerUserRequest);
         ResponseWrapper<UserResource> response = new ResponseWrapper<>();
         response.setData(userResource);
@@ -79,6 +82,7 @@ public class UserApi {
         response.setCode("update_user_successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<ResponseWrapper<UserResource>> updateUser(
             @PathVariable Long id,
@@ -94,7 +98,7 @@ public class UserApi {
     }
 
     @GetMapping("/generate-presigned-upload-avatar-url")
-    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlPutAvatar(@RequestParam String extension){
+    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlPutAvatar(@RequestParam String extension) {
         ResponseWrapper<String> response = new ResponseWrapper<>();
         response.setData(s3Service.generatePreSignUrlUploadAvatar(extension));
         response.setMessage("create presign upload avatar url successful");
@@ -103,11 +107,29 @@ public class UserApi {
     }
 
     @GetMapping("/generate-presigned-get-avatar-url")
-    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlGetAvatar(@RequestParam String filename){
+    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlGetAvatar(@RequestParam String filename) {
         ResponseWrapper<String> response = new ResponseWrapper<>();
         response.setData(s3Service.generateGetObjectPresignURL(filename));
         response.setMessage("create presign get avatar url successful");
         response.setCode("create_presign_url_successful");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("total")
+    public ResponseEntity<ResponseWrapper<Long>> getTotalUsers() {
+        ResponseWrapper<Long> response = new ResponseWrapper<>();
+        response.setData((Long) redisTemplate.opsForValue().get("totalUser"));
+        response.setMessage("get total uses successful");
+        response.setCode("get_total_user_successful");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("total-in-db")
+    public ResponseEntity<ResponseWrapper<Long>> getTotalUsersInDB() {
+        ResponseWrapper<Long> response = new ResponseWrapper<>();
+        response.setData(userService.count());
+        response.setMessage("get total uses successful");
+        response.setCode("get_total_user_successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
