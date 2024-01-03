@@ -3,6 +3,7 @@ package com.example.demo.api.rest;
 import com.example.demo.domain.dto.request.RegisterUserRequest;
 import com.example.demo.domain.dto.request.UserRequest;
 import com.example.demo.domain.dto.resource.UserResource;
+import com.example.demo.service.impl.S3Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +16,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserApi {
+    final S3Service s3Service;
     private final UserService userService;
 
     @Autowired
-    public UserApi(UserService userService) {
+    public UserApi(UserService userService, S3Service s3Service) {
         this.userService = userService;
+        this.s3Service = s3Service;
     }
 
     @GetMapping("")
@@ -87,6 +90,24 @@ public class UserApi {
         response.setData(userResource);
         response.setMessage("Update user successful");
         response.setCode("update_user_successful");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/generate-presigned-upload-avatar-url")
+    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlPutAvatar(@RequestParam String extension){
+        ResponseWrapper<String> response = new ResponseWrapper<>();
+        response.setData(s3Service.generatePreSignUrlUploadAvatar(extension));
+        response.setMessage("create presign upload avatar url successful");
+        response.setCode("create_presign_url_successful");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/generate-presigned-get-avatar-url")
+    public ResponseEntity<ResponseWrapper<String>> getPreSignUrlGetAvatar(@RequestParam String filename){
+        ResponseWrapper<String> response = new ResponseWrapper<>();
+        response.setData(s3Service.generateGetObjectPresignURL(filename));
+        response.setMessage("create presign get avatar url successful");
+        response.setCode("create_presign_url_successful");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

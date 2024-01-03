@@ -1,5 +1,6 @@
-package com.example.demo.service.Email;
+package com.example.demo.service.impl;
 
+import com.example.demo.service.IEmailService;
 import jakarta.mail.internet.InternetAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 
 @Service
-public class EmailService {
+public class EmailService implements IEmailService {
     private final JavaMailSender mailSender;
 
     @Autowired

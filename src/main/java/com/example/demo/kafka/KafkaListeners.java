@@ -1,7 +1,7 @@
 package com.example.demo.kafka;
 
 import com.example.demo.domain.entity.UserEntity;
-import com.example.demo.service.Email.EmailService;
+import com.example.demo.service.impl.EmailService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

@@ -17,7 +17,6 @@ public class HelloWorld {
         LOGGER.info("This is INFO");
         LOGGER.warn("This is WARN");
         LOGGER.error("This is ERROR");
-
         return " Hello demo project";
     }
 }
