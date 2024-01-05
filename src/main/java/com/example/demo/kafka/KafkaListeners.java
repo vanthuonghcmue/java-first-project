@@ -29,8 +29,8 @@ public class KafkaListeners {
         UserEntity userEntity = objectMapper.readValue(message, UserEntity.class);
         emailService.sendEmail(
                 userEntity.getEmail(),
-                "Well come to presentation app",
-                "Hi " + userEntity.getUsername() + ", Well come!"
+                "Welcome to presentation app",
+                "Hi " + userEntity.getUsername() + ", Welcome!"
         );
     }
 }
