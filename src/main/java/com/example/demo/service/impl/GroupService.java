@@ -36,7 +36,7 @@ public class GroupService implements IGroupService {
 
     @Override
     public List<GroupResource> all() {
-        List<GroupEntity> groupEntities = groupRepository.findAll();
+        List<GroupEntity> groupEntities = groupRepository.findAllGroupWithUsers();
         return groupEntities.stream().map(groupMapper::mapTo).toList();
     }
 
@@ -74,6 +74,10 @@ public class GroupService implements IGroupService {
             userRepository.findById(userId).ifPresent(users::add);
         }
         groupEntity.setUsers(users);
+//        for (UserEntity user : users) {
+//            user.getGroups().add(groupEntity);
+//            userRepository.save(user);
+//        }
         return groupRepository.save(groupEntity);
     }
 

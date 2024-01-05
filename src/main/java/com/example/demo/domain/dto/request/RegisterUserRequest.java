@@ -11,6 +11,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RegisterUserRequest implements UserDto {
 //    @NotEmpty(message = "NotEmpty")
     @NotBlank(message = "The name is required")

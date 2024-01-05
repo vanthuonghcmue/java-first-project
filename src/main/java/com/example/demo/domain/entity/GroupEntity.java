@@ -14,10 +14,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name="groups")
-public class GroupEntity extends BaseEntity{
+@Table(name = "groups")
+public class GroupEntity extends BaseEntity {
     @Getter
-    @Column(nullable=false)
+    @Column(nullable = false)
     private String name;
 
     @Column(columnDefinition = "TEXT")
